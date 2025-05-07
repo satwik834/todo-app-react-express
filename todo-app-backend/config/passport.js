@@ -21,10 +21,22 @@ function initialize(passport){
     };
     passport.use(new Strategy({usernameField: 'email'}, authenticateUser))
 
-    passport.serializeUser((user,cb) => cb(null, user));
+ passport.serializeUser((user,cb) => {
+ cb(null, user.id); // Store only the user ID
+    });
 
-    passport.deserializeUser((user, cb) => {
-        cb(null,user)
+ passport.deserializeUser(async (id, cb) => {
+ try {
+ const users = await userModel.getUserById(id); // Fetch the user by ID
+ const user = users[0]
+ if (user) {
+ cb(null, user);
+            } else {
+ cb(new Error('User not found'), null);
+            }
+ } catch (err) {
+ cb(err);
+        }
     })
 }
 

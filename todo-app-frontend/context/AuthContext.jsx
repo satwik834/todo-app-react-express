@@ -3,8 +3,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 
 
 export const AuthContext = createContext();
-
-const API = 'http://localhost:3000/auth';
+const API_BASE_URL = 'http://localhost:3000';
 
 export function useAuth(){
     return useContext(AuthContext);
@@ -18,7 +17,7 @@ export function AuthProvider({children}) {
     useEffect(() => {
         const checkAuth = async () => {
             try {
-                const response = await axios.get(`${API}/me`, { 
+                const response = await axios.get(`${API_BASE_URL}/auth/me`, {
                     withCredentials: true 
                 });
                 if (response?.data?.user) {
@@ -27,6 +26,7 @@ export function AuthProvider({children}) {
                 }
             } catch (err) {
                 setUser(null);
+                console.error('Authentication check failed:', err);
                 setIsLoggedIn(false);
             } finally {
                 setLoading(false);
@@ -39,7 +39,7 @@ export function AuthProvider({children}) {
 
     const login = async (email,password) => {
         try{
-            const response = await axios.post(`${API}/login`,{
+            const response = await axios.post(`${API_BASE_URL}/auth/login`,{
                 email,
                 password
             },{withCredentials: true});
@@ -53,8 +53,8 @@ export function AuthProvider({children}) {
 
     }
     const register = async (username,email,password) => {
-        try{
-            const response = await axios.post(`${API}/register`,{
+        try {
+            const response = await axios.post(`${API_BASE_URL}/auth/register`,{
                 username,
                 email,
                 password
@@ -66,8 +66,8 @@ export function AuthProvider({children}) {
 
     }
     const logout = async () => {
-        try{
-            const response = await axios.post(`${API}/logout`,{},{withCredentials: true});
+        try {
+            const response = await axios.post(`${API_BASE_URL}/auth/logout`,{},{withCredentials: true});
 
             setUser(null)
             setIsLoggedIn(false);

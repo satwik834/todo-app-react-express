@@ -9,11 +9,6 @@ import { Navigate } from "react-router-dom";
 
 function App(){
   const {isLoggedIn} = useAuth();
-
-    if(!isLoggedIn){
-      return <Navigate to="/login"/>;
-    }
-    
     return(
       <>
       <NavBar />

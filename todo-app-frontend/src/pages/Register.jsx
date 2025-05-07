@@ -9,6 +9,8 @@ const Register = () => {
     email: '',
     password: '',
   });
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const {register} = useAuth();
@@ -19,10 +21,13 @@ const Register = () => {
 const handleSubmit = async e => {
     e.preventDefault();
     try {
+        setError(null)
+        setLoading(true)
         await register(form.username, form.email, form.password);
-        navigate('/login');
+        navigate('/');
     } catch(err) {
         console.error('Registration error:', err);
+        setError(err.error)
     }
 };
 
@@ -31,6 +36,7 @@ const handleSubmit = async e => {
       <Card style={{ width: '24rem' }}>
         <Card.Body>
           <Card.Title className="text-center mb-4">Register</Card.Title>
+          {error && <p style={{ color: 'red' }}>{error}</p>}
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3">
               <Form.Label>Name</Form.Label>
@@ -38,7 +44,7 @@ const handleSubmit = async e => {
                 type="text" 
                 name="username" 
                 placeholder="username"
-                value={form.name}
+                value={form.username}
                 onChange={handleChange}
                 required
               />
@@ -68,7 +74,7 @@ const handleSubmit = async e => {
               />
             </Form.Group>
 
-            <Button  variant="success" type="submit" className="w-100">Register</Button>
+            <Button  variant="success" type="submit" className="w-100" disabled={loading}>{loading ? 'Registering...' : 'Register'}</Button>
           </Form>
 
           <div className="text-center mt-3">

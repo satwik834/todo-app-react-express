@@ -8,16 +8,19 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const {login} = useAuth();
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const handleSubmit = async e => {
     e.preventDefault();
-    console.log('handling')
+    setError(null)
+    setLoading(true)
     try{
         await login(email, password)
-        console.log('success')
         navigate('/')
     }catch(err){
         console.log(err.message)
+        setError(err.error)
     }
     
   };
@@ -28,6 +31,7 @@ const Login = () => {
         <Card.Body>
           <Card.Title className="text-center mb-4">Login</Card.Title>
           <Form onSubmit={handleSubmit}>
+            {error && <p style={{ color: 'red' }}>{error}</p>}
             <Form.Group className="mb-3">
               <Form.Label>Email address</Form.Label>
               <Form.Control 
@@ -50,7 +54,7 @@ const Login = () => {
               />
             </Form.Group>
 
-            <Button variant="primary" type="submit" className="w-100">Login</Button>
+            <Button variant="primary" type="submit" className="w-100" disabled={loading}>{loading ? 'Logging In...' : 'Login'}</Button>
           </Form>
 
           <div className="text-center mt-3">

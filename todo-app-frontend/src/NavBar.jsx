@@ -1,19 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Button } from 'react-bootstrap';
+import { Button, Alert } from 'react-bootstrap';
 
 function NavBar() {
-  const { isLoggedIn, user,logout } = useAuth()
-  const [email,setEmail] = useState(null)
-  useEffect(() => {
-      if(isLoggedIn){
-        setEmail(user.email)
-      }
-  }, []);
+  const { isLoggedIn, user, logout } = useAuth()
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
   
   return (
     <Navbar expand="lg" bg="dark" variant="dark" className="w-75 nav-bar">
@@ -26,9 +22,22 @@ function NavBar() {
           </Nav>
           <Nav>
             {isLoggedIn?(
-                <div>
-                    <span>Welcome, {user?.username}</span>
-                    <Button onClick={logout}>Logout</Button>
+                <div className='d-flex align-items-center'>
+                    {error && <Alert variant="danger" className="me-2 mb-0 py-1">{error}</Alert>}
+                    <span className='text-light me-3'>Welcome, {user?.email}</span>
+                    <Button 
+                      variant='outline-light' 
+                      onClick={async () => {
+                        setError(null);
+                        setLoading(true);
+                        try {
+                          await logout();
+                        } catch (err) {
+                          setError(err.error || 'Logout failed');
+                        } finally { setLoading(false); } }}
+                      disabled={loading}>
+                      {loading ? 'Logging out...' : 'Logout'}
+                    </Button>
                 </div>
 
             ) :(
